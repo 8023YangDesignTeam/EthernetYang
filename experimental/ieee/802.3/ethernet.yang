@@ -11,15 +11,7 @@ module ethernet {
   }
 
   organization
-    "Cisco Systems, Inc.
-     Customer Service
-
-     Postal: 170 W Tasman Drive
-     San Jose, CA 95134
-
-     Tel: +1 1800 553-NETS
-     
-     E-mail: cs-yang@cisco.com";
+    "IEEE 802.1 YANG WG";
 
   contact
     "Robert Wilton - rwilton@cisco.com";
