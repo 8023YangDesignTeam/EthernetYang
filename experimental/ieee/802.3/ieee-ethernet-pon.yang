@@ -330,305 +330,6 @@ module ieee-ethernet-pon {
               event occurred";
         }
     }
-    grouping mpcp-queue-set-group {
-        description 
-         "An instance of this object for each value of 'mpcp-queue-index' is created when 
-          a new logical link is registered and deleted when the logical link is 
-          deregistered.  
-          All instances of this object in the ONU associated with the given logical link 
-          are then mapped in to a REPORT MPCPDU, when generated. 
-          +-----------------------------------+
-          |          Destination Address      |
-          +-----------------------------------+
-          |          Source Address           |
-          +-----------------------------------+
-          |          Length/Type              |
-          +-----------------------------------+
-          |          OpCode                   |
-          +-----------------------------------+
-          |          TimeStamp                |
-          +-----------------------------------+
-          |          Number of Queue Sets     |
-          +-----------------------------------+   /|\
-          |          Report bitmap            |    |
-          +-----------------------------------+    |
-          |          Queue 0 report           |    |
-          +-----------------------------------+    | repeated for
-          |          Queue 1 report           |    | every
-          +-----------------------------------+    | Queue Set
-          |          Queue 2 report           |    |
-          +-----------------------------------+    |
-          |          Queue 3 report           |    |
-          +-----------------------------------+    |
-          |          Queue 4 report           |    |
-          +-----------------------------------+    |
-          |          Queue 5 report           |    |
-          +-----------------------------------+    |
-          |          Queue 6 report           |    |
-          +-----------------------------------+    |
-          |          Queue 7 report           |    |
-          +-----------------------------------+   \|/
-          |          Pad/reserved             |
-          +-----------------------------------+
-          |          FCS                      |
-          +-----------------------------------+
-          
-          The 'Queue N report' field reports the current occupancy of each upstream 
-          transmission queue associated with the given logical link. 
-          The 'Number of Queue Sets' field defines the number of reported 'Queue N report'
-          sets, as defined in dot3ExtPkgQueueSetsTable. 
-          For each Queue Set, the 'Report bitmap' field defines which upstream 
-          transmission queues are present in the REPORT MPCPDU. Although the REPORT MPCPDU
-          can report current occupation for up to 8 upstream transmission queues in 
-          a single REPORT MPCPDU, the actual number is flexible. The 'mpcp-queue-group' 
-          grouping has a variable size that is limited by value of 
-          'mpcp-maximum-queue-count-per-report' object, allowing ONUs report the occupany
-          of fewer upstream transmission queues, as needed. 
-          This object is applicable for an OLT and an ONU. 
-          At the OLT, it has a distinct value for each logical link and every queue. 
-          At the ONU, it has a distinct value for every queue.";
-        reference "IEEE Std 802.3.1, Dot3ExtPkgQueueSetsEntry";
-        leaf mpcp-queue-index {
-            type leafref {
-                path "/if:interfaces/if:interface/eth:ethernet/mpcp-queue-index";
-            }
-            description 
-             "An object represents the index of an upstream transmission queue storing 
-              subscriber packets. The size (occupancy) of the upstream transmission queue
-              identified by this object is then reported within REPORT MPCPDU, defined in 
-              IEEE Std 802.3, Clause 64 and Clause 77. 
-              This object can have a value between 0 and 7, limited by the value stored in 
-              the 'mpcp-maximum-queue-count-per-report' object. 
-              This object is applicable for an OLT and an ONU. 
-              At the OLT, it has a distinct value for each logical link and each queue.
-              At the ONU, it has a distinct value for each queue. ";
-            reference "IEEE Std 802.3.1, dot3QueueSetQueueIndex";
-        }
-        leaf mpcp-queue-set-index {
-            type uint8 {
-                range "0 .. 7" {
-                    description 
-                     "This object can have a value between 0 and 7, limited by the value stored in 
-                      the 'mpcp-maximum-queue-count-per-report' object.";
-                    reference "See ''mpcp-maximum-queue-count-per-report' object";
-                }
-            }
-            config false;
-            description 
-             "This object represents the index of the Queue Set for the 'mpcp-queue-set-group'
-              grouping. The size (occupancy) of the upstream transmission queues belonging to
-              the given Queue Set is then reported within REPORT MPCPDU, defined in 
-              IEEE Std 802.3, Clause 64 and Clause 77. 
-              This object can have a value between 0 and 7, limited by the value stored in 
-              the 'mpcp-queue-threshold-count-max' object. ";
-            reference "IEEE Std 802.3.1, dot3QueueSetIndex";
-        }
-        leaf mpcp-queue-set-threshold {
-            type uint32;
-            units "TQ (16ns)";
-            default 0;
-            config false;
-            description 
-             "This object defines the value of a reporting threshold for each Queue Set stored
-              in REPORT MPCPDU defined in IEEE Std 802.3, Clause 64 and Clause 77. 
-              The number of Queue Sets for each upstream transmission queue is defined in the 
-              'mpcp-queue-threshold-count' object. 
-              Within REPORT MPCPDU, each Queue Set provides information on the current 
-              upstream transmission queue occupancy for frames below the matching threshold.
-              The value stored in this object is expressed in the units of Time quanta (TQ), 
-              where 1 TQ = 16 ns. 
-              A read of this object provides the current threshold value for the specific
-              upstream transmission queue. 
-              A write into thsi object sets the threshold value for specific upstream 
-              transmission queue. A change in the value of this object can lead to changes in 
-              reporting queue occupany for the affected logical link and therefore affect the
-              bandwidth allocation of the respective logical link. This change may lead a
-              degradation and/or interruption of service for user(s) connected to the given
-              logical link.
-              This object is applicable for an OLT and an ONU. 
-              At the OLT, it has a distinct value for each logical link, each queue, and each
-              Queue Set.
-              At the ONU, it has a distinct value for each queue and each Queue Set. ";
-            reference "IEEE Std 802.3.1, dot3ExtPkgObjectReportThreshold";
-        }
-    }
-    grouping mpcp-queue-group {
-        description 
-         "An instance of this object for each value of 'mpcp-queue-index' is created when 
-          a new logical link is registered and deleted when the logical link is 
-          deregistered.  
-          All instances of this object in the ONU associated with the given logical link 
-          are then mapped in to a REPORT MPCPDU, when generated. 
-          +-----------------------------------+
-          |          Destination Address      |
-          +-----------------------------------+
-          |          Source Address           |
-          +-----------------------------------+
-          |          Length/Type              |
-          +-----------------------------------+
-          |          OpCode                   |
-          +-----------------------------------+
-          |          TimeStamp                |
-          +-----------------------------------+
-          |          Number of Queue Sets     |
-          +-----------------------------------+   /|\
-          |          Report bitmap            |    |
-          +-----------------------------------+    |
-          |          Queue 0 report           |    |
-          +-----------------------------------+    | repeated for
-          |          Queue 1 report           |    | every
-          +-----------------------------------+    | Queue Set
-          |          Queue 2 report           |    |
-          +-----------------------------------+    |
-          |          Queue 3 report           |    |
-          +-----------------------------------+    |
-          |          Queue 4 report           |    |
-          +-----------------------------------+    |
-          |          Queue 5 report           |    |
-          +-----------------------------------+    |
-          |          Queue 6 report           |    |
-          +-----------------------------------+    |
-          |          Queue 7 report           |    |
-          +-----------------------------------+   \|/
-          |          Pad/reserved             |
-          +-----------------------------------+
-          |          FCS                      |
-          +-----------------------------------+
-          
-          The 'Queue N report' field reports the current occupancy of each upstream 
-          transmission queue associated with the given logical link. 
-          The 'Number of Queue Sets' field defines the number of reported 'Queue N report'
-          sets, as defined in dot3ExtPkgQueueSetsTable. 
-          For each Queue Set, the 'Report bitmap' field defines which upstream 
-          transmission queues are present in the REPORT MPCPDU. Although the REPORT MPCPDU
-          can report current occupation for up to 8 upstream transmission queues in 
-          a single REPORT MPCPDU, the actual number is flexible. The 'mpcp-queue-group' 
-          grouping has a variable size that is limited by value of 
-          'mpcp-maximum-queue-count-per-report' object, allowing ONUs report the occupany
-          of fewer upstream transmission queues, as needed. 
-          This object is applicable for an OLT and an ONU. 
-          At the OLT, it has a distinct value for each logical link and every queue. 
-          At the ONU, it has a distinct value for every queue.";
-        reference "IEEE Std 802.3.1, dot3ExtPkgQueueEntry";
-        leaf mpcp-queue-index {
-            type uint8 {
-                range "0 .. 7" {
-                    description 
-                     "This object can have a value between 0 and 7, limited by the value stored in 
-                      the 'mpcp-maximum-queue-count-per-report' object.";
-                    reference "See ''mpcp-maximum-queue-count-per-report' object";
-                }
-            }
-            config false;
-            description 
-             "An object represents the index of an upstream transmission queue storing 
-              subscriber packets. The size (occupancy) of the upstream transmission queue
-              identified by this object is then reported within REPORT MPCPDU, defined in 
-              IEEE Std 802.3, Clause 64 and Clause 77. 
-              This object can have a value between 0 and 7, limited by the value stored in 
-              the 'mpcp-maximum-queue-count-per-report' object. 
-              This object is applicable for an OLT and an ONU. 
-              At the OLT, it has a distinct value for each logical link and each queue.
-              At the ONU, it has a distinct value for each queue. ";
-            reference "IEEE Std 802.3.1, dot3QueueIndex";
-        }
-        leaf mpcp-queue-threshold-count {
-            type uint8 {
-                range "0 .. 7" {
-                    description 
-                     "This object can have a value between 0 and 7, limited by the value stored in 
-                      the 'mpcp-queue-threshold-count-max' object.";
-                    reference "See 'mpcp-queue-threshold-count-max' object";
-                }
-            }
-            config false;
-            description 
-             "This object reflects the number of reporting thresholds for the specific 
-              upstream transmission queue, reflected in the REPORT MPCPDU, as defined in 
-              IEEE Std 802.3, Clause 64 and Clause 77. 
-              Each 'Queue set' provides information for the specific upstream transmission 
-              queue occupancy of frames below the matching reporting threshold. 
-              A read of this object reflects the number of reporting thresholds for the 
-              specific upstream transmission queue.
-              A write into this object can be done at any time and it is restricted to the 
-              range of 0 .. 'mpcp-queue-threshold-count-max' value. A change in the value of 
-              this object can lead to changes in reporting queue occupany for the affected
-              logical link and therefore affect the bandwidth allocation of the respective 
-              logical link. This change may lead a degradation and/or interruption of service 
-              for user(s) connected to the given logical link. 
-              This object is applicable for an OLT and an ONU. 
-              At the OLT, it has a distinct value for each logical link and each queue.
-              At the ONU, it has a distinct value for each queue. ";
-            reference "IEEE Std 802.3.1, dot3ExtPkgObjectReportNumThreshold";
-        }
-        leaf mpcp-queue-threshold-count-max {
-            type uint8 {
-                range "0 .. 7" {
-                    description "This object can have a value between 0 and 7.";
-                }
-            }
-            config false;
-            description 
-             "This object reflects the maximum number of reporting thresholds for the 
-              specific upstream transmission queue, reflected in the REPORT MPCPDU, 
-              as defined in IEEE Std 802.3, Clause 64 and Clause 77. 
-              This object is applicable for an OLT and an ONU. 
-              At the OLT, it has a distinct value for each logical link and each queue.
-              At the ONU, it has a distinct value for each queue. ";
-            reference "IEEE Std 802.3.1, dot3ExtPkgObjectReportMaximumNumThreshold";
-        }
-        leaf mpcp-queue-pkts-out {
-            when "if:interfaces-state/if:interface/eth:ethernet/epon:epon/mpcp-mode = 'onu'";
-            type yang:counter64;
-            config false;
-            description 
-             "This object reflects the number of frame transmission events from the 
-              corresponding upstream transmission queue. This object is incremented by one 
-              for each frame transmitted, when it is output from the associated queue. 
-              The queue index matches the queue number in REPORT MPCPDU, as defined in 
-              IEEE Std 802.3, Clause 64 and Clause 77. 
-              This object is applicable for an ONU only. 
-              At the ONU, it has a distinct value for each queue. 
-              Discontinuities of this counter can occur at re-initialization of the management
-              system and at other times, as indicated by the value of the 
-              ifCounterDiscontinuityTime object.";
-            reference "IEEE Std 802.3.1, dot3ExtPkgStatTxFramesQueue";
-        }
-        leaf mpcp-queue-pkts-in {
-            type yang:counter64;
-            config false;
-            description 
-             "This object reflects the number of frame reception events into the 
-              corresponding upstream transmission queue. This object is incremented by one 
-              for each frame received, when it is input into the associated queue. 
-              The queue index matches the queue number in REPORT MPCPDU, as defined in 
-              IEEE Std 802.3, Clause 64 and Clause 77. 
-              This object is applicable for an OLT and an ONU. 
-              At the OLT, it has a distinct value for each logical link and each queue.
-              At the ONU, it has a distinct value for each queue. 
-              Discontinuities of this counter can occur at re-initialization of the management
-              system and at other times, as indicated by the value of the 
-              ifCounterDiscontinuityTime object.";
-            reference "IEEE Std 802.3.1, dot3ExtPkgStatRxFramesQueue";
-        }
-        leaf mpcp-queue-pkts-drop {
-            when "if:interfaces-state/if:interface/eth:ethernet/epon:epon/mpcp-mode = 'onu'";
-            type yang:counter64;
-            config false;
-            description 
-             "This object reflects the number of frame drop events from the 
-              corresponding upstream transmission queue. This object is incremented by one 
-              for each frame is dropped in the associated queue. 
-              The queue index matches the queue number in REPORT MPCPDU, as defined in 
-              IEEE Std 802.3, Clause 64 and Clause 77. 
-              This object is applicable for an ONU only. 
-              At the ONU, it has a distinct value for each queue. 
-              Discontinuities of this counter can occur at re-initialization of the management
-              system and at other times, as indicated by the value of the 
-              ifCounterDiscontinuityTime object.";
-            reference "IEEE Std 802.3.1, dot3ExtPkgStatDroppedFramesQueue";
-        }
-    }
     notification trx-threshold-crossing-event {
         description "Defines an event associated with crossing a low / high thresgold for input / output power for an optical transceiver.";
         uses trx-threshold-crossing-notification {
@@ -859,7 +560,8 @@ module ieee-ethernet-pon {
               At the OLT, it has a distinct value for each logical link.";
             reference "IEEE Std 802.3, dot3ExtPkgOptIfUpperOutputPowerThreshold";
         }
-        uses mpcp-queue-group {
+        list mpcp-queues {
+            key mpcp-queue-index;
             description 
              "An instance of this object for each value of 'mpcp-queue-index' is created when 
               a new logical link is registered and deleted when the logical link is 
@@ -917,202 +619,81 @@ module ieee-ethernet-pon {
               At the OLT, it has a distinct value for each logical link and every queue. 
               At the ONU, it has a distinct value for every queue.";
             reference "IEEE Std 802.3.1, dot3ExtPkgQueueEntry";
-            refine mpcp-queue-index {
-                config false;
-            }
-            refine mpcp-queue-threshold-count {
-                config true;
-            }
-            refine mpcp-queue-threshold-count-max {
-                config false;
-            }
-            refine mpcp-queue-pkts-in {
-                config false;
-            }
-            refine mpcp-queue-pkts-out {
-                config false;
-            }
-            refine mpcp-queue-pkts-drop {
-                config false;
-            }
-        }
-        uses mpcp-queue-set-group {
-            description 
-             "An instance of this object for each value of 'mpcp-queue-index' is created when 
-              a new logical link is registered and deleted when the logical link is 
-              deregistered.  
-              All instances of this object in the ONU associated with the given logical link 
-              are then mapped in to a REPORT MPCPDU, when generated. 
-              +-----------------------------------+
-              |          Destination Address      |
-              +-----------------------------------+
-              |          Source Address           |
-              +-----------------------------------+
-              |          Length/Type              |
-              +-----------------------------------+
-              |          OpCode                   |
-              +-----------------------------------+
-              |          TimeStamp                |
-              +-----------------------------------+
-              |          Number of Queue Sets     |
-              +-----------------------------------+   /|\
-              |          Report bitmap            |    |
-              +-----------------------------------+    |
-              |          Queue 0 report           |    |
-              +-----------------------------------+    | repeated for
-              |          Queue 1 report           |    | every
-              +-----------------------------------+    | Queue Set
-              |          Queue 2 report           |    |
-              +-----------------------------------+    |
-              |          Queue 3 report           |    |
-              +-----------------------------------+    |
-              |          Queue 4 report           |    |
-              +-----------------------------------+    |
-              |          Queue 5 report           |    |
-              +-----------------------------------+    |
-              |          Queue 6 report           |    |
-              +-----------------------------------+    |
-              |          Queue 7 report           |    |
-              +-----------------------------------+   \|/
-              |          Pad/reserved             |
-              +-----------------------------------+
-              |          FCS                      |
-              +-----------------------------------+
-              
-              The 'Queue N report' field reports the current occupancy of each upstream 
-              transmission queue associated with the given logical link. 
-              The 'Number of Queue Sets' field defines the number of reported 'Queue N report'
-              sets, as defined in dot3ExtPkgQueueSetsTable. 
-              For each Queue Set, the 'Report bitmap' field defines which upstream 
-              transmission queues are present in the REPORT MPCPDU. Although the REPORT MPCPDU
-              can report current occupation for up to 8 upstream transmission queues in 
-              a single REPORT MPCPDU, the actual number is flexible. The 'mpcp-queue-group' 
-              grouping has a variable size that is limited by value of 
-              'mpcp-maximum-queue-count-per-report' object, allowing ONUs report the occupany
-              of fewer upstream transmission queues, as needed. 
-              This object is applicable for an OLT and an ONU. 
-              At the OLT, it has a distinct value for each logical link and every queue. 
-              At the ONU, it has a distinct value for every queue.";
-            reference "IEEE Std 802.3.1, Dot3ExtPkgQueueSetsEntry";
-            refine mpcp-queue-index {
-                config false;
-            }
-            refine mpcp-queue-set-index {
-                config false;
-            }
-            refine mpcp-queue-set-threshold {
-                config true;
-            }
-        }
-
-
-  }
-
-  augment "/if:interfaces-state/if:interface/eth:ethernet" {
-    description
-      "Augments definition of Ethernet interface
-         (/if:interfaces-state/if:interface/eth:ethernet) operational state model
-         with nodes
-       specific to Ethernet MPCP";
-
-    container epon {
-            if-feature mpcp-supported;
-
-      presence
-        "Implies EPON is suported on the selected Ethernet interface";
-      description
-        "Various EPON-related operational state and counter nodes for the
-         selected Ethernet interface, including physical interfaces and logical
-         link interfaces.
-         The LLID field, as defined in IEEE Std 802.3, is a 2-byte register
-          (15-bit field and a broadcast bit) limiting the number of logical links
-          to 32768. Typically the number of expected logical links in a PON is
-          like the number of ONUs, which is 32-64, plus an additional entry for
-          broadcast LLID.
-         An ONU interface instance is created at system initialization.
-         An OLT interface instance, corresponding to the broadcast logical link,
-          is created at system initialization.
-         An OLT interface instance, corresponding to a unicast logical link, is
-          created when a logical link is established (an ONU registers) and
-          deleted when the logical link is deleted (the ONU deregisters).";
-            uses mpcp-queue-group {
+            leaf mpcp-queue-index {
+                type uint8 {
+                    range "0 .. 7" {
+                        description 
+                         "This object can have a value between 0 and 7, limited by the value stored in 
+                          the 'mpcp-maximum-queue-count-per-report' object.";
+                        reference "See ''mpcp-maximum-queue-count-per-report' object";
+                    }
+                }
                 description 
-                 "An instance of this object for each value of 'mpcp-queue-index' is created when 
-                  a new logical link is registered and deleted when the logical link is 
-                  deregistered.  
-                  All instances of this object in the ONU associated with the given logical link 
-                  are then mapped in to a REPORT MPCPDU, when generated. 
-                  +-----------------------------------+
-                  |          Destination Address      |
-                  +-----------------------------------+
-                  |          Source Address           |
-                  +-----------------------------------+
-                  |          Length/Type              |
-                  +-----------------------------------+
-                  |          OpCode                   |
-                  +-----------------------------------+
-                  |          TimeStamp                |
-                  +-----------------------------------+
-                  |          Number of Queue Sets     |
-                  +-----------------------------------+   /|\
-                  |          Report bitmap            |    |
-                  +-----------------------------------+    |
-                  |          Queue 0 report           |    |
-                  +-----------------------------------+    | repeated for
-                  |          Queue 1 report           |    | every
-                  +-----------------------------------+    | Queue Set
-                  |          Queue 2 report           |    |
-                  +-----------------------------------+    |
-                  |          Queue 3 report           |    |
-                  +-----------------------------------+    |
-                  |          Queue 4 report           |    |
-                  +-----------------------------------+    |
-                  |          Queue 5 report           |    |
-                  +-----------------------------------+    |
-                  |          Queue 6 report           |    |
-                  +-----------------------------------+    |
-                  |          Queue 7 report           |    |
-                  +-----------------------------------+   \|/
-                  |          Pad/reserved             |
-                  +-----------------------------------+
-                  |          FCS                      |
-                  +-----------------------------------+
-                  
-                  The 'Queue N report' field reports the current occupancy of each upstream 
-                  transmission queue associated with the given logical link. 
-                  The 'Number of Queue Sets' field defines the number of reported 'Queue N report'
-                  sets, as defined in dot3ExtPkgQueueSetsTable. 
-                  For each Queue Set, the 'Report bitmap' field defines which upstream 
-                  transmission queues are present in the REPORT MPCPDU. Although the REPORT MPCPDU
-                  can report current occupation for up to 8 upstream transmission queues in 
-                  a single REPORT MPCPDU, the actual number is flexible. The 'mpcp-queue-group' 
-                  grouping has a variable size that is limited by value of 
-                  'mpcp-maximum-queue-count-per-report' object, allowing ONUs report the occupany
-                  of fewer upstream transmission queues, as needed. 
+                 "An object represents the index of an upstream transmission queue storing 
+                  subscriber packets. The size (occupancy) of the upstream transmission queue
+                  identified by this object is then reported within REPORT MPCPDU, defined in 
+                  IEEE Std 802.3, Clause 64 and Clause 77. 
+                  This object can have a value between 0 and 7, limited by the value stored in 
+                  the 'mpcp-maximum-queue-count-per-report' object. 
                   This object is applicable for an OLT and an ONU. 
-                  At the OLT, it has a distinct value for each logical link and every queue. 
-                  At the ONU, it has a distinct value for every queue.";
-                reference "IEEE Std 802.3.1, dot3ExtPkgQueueEntry";
-                refine mpcp-queue-index {
-                    config false;
-                }
-                refine mpcp-queue-threshold-count {
-                    config false;
-                }
-                refine mpcp-queue-threshold-count-max {
-                    config false;
-                }
-                refine mpcp-queue-pkts-in {
-                    config false;
-                }
-                refine mpcp-queue-pkts-out {
-                    config false;
-                }
-                refine mpcp-queue-pkts-drop {
-                    config false;
-                }
+                  At the OLT, it has a distinct value for each logical link and each queue.
+                  At the ONU, it has a distinct value for each queue. ";
+                reference "IEEE Std 802.3.1, dot3QueueIndex";
             }
-            uses mpcp-queue-set-group {
+            leaf mpcp-queue-threshold-count {
+                type uint8 {
+                    range "0 .. 7" {
+                        description 
+                         "This object can have a value between 0 and 7, limited by the value stored in 
+                          the 'mpcp-queue-threshold-count-max' object.";
+                        reference "See 'mpcp-queue-threshold-count-max' object";
+                    }
+                }
+                config true;
+                description 
+                 "This object reflects the number of reporting thresholds for the specific 
+                  upstream transmission queue, reflected in the REPORT MPCPDU, as defined in 
+                  IEEE Std 802.3, Clause 64 and Clause 77. 
+                  Each 'Queue set' provides information for the specific upstream transmission 
+                  queue occupancy of frames below the matching reporting threshold. 
+                  A write into this object can be done at any time and it is restricted to the 
+                  range of 0 .. 'mpcp-queue-threshold-count-max' value. A change in the value of 
+                  this object can lead to changes in reporting queue occupany for the affected
+                  logical link and therefore affect the bandwidth allocation of the respective 
+                  logical link. This change may lead a degradation and/or interruption of service 
+                  for user(s) connected to the given logical link. 
+                  This object is applicable for an OLT and an ONU. 
+                  At the OLT, it has a distinct value for each logical link and each queue.
+                  At the ONU, it has a distinct value for each queue. ";
+                reference "IEEE Std 802.3.1, dot3ExtPkgObjectReportNumThreshold";
+            }
+            leaf mpcp-queue-threshold-count-max {
+                type uint8 {
+                    range "0 .. 7" {
+                        description "This object can have a value between 0 and 7.";
+                    }
+                }
+                config true;
+                description 
+                 "This object controls the maximum number of reporting thresholds for the 
+                  specific upstream transmission queue, reflected in the REPORT MPCPDU, 
+                  as defined in IEEE Std 802.3, Clause 64 and Clause 77. 
+                  A write into this object sets the number of thresholds for the specific upstream 
+                  transmission queue. A change in the value of this object can lead to changes in 
+                  reporting queue occupany for the affected logical link and therefore affect the
+                  bandwidth allocation of the respective logical link. This change may lead a
+                  degradation and/or interruption of service for user(s) connected to the given
+                  logical link.
+                  This object is applicable for an OLT and an ONU. 
+                  At the OLT, it has a distinct value for each logical link and each queue.
+                  At the ONU, it has a distinct value for each queue.  ";
+                reference "IEEE Std 802.3.1, dot3ExtPkgObjectReportMaximumNumThreshold";
+            }
+            list mpcp-queue-thresholds {
+                when "../mpcp-queue-threshold-count > 0";
+                key mpcp-queue-set-index;
+                min-elements 0;
+                max-elements 7;
                 description 
                  "An instance of this object for each value of 'mpcp-queue-index' is created when 
                   a new logical link is registered and deleted when the logical link is 
@@ -1170,17 +751,83 @@ module ieee-ethernet-pon {
                   At the OLT, it has a distinct value for each logical link and every queue. 
                   At the ONU, it has a distinct value for every queue.";
                 reference "IEEE Std 802.3.1, Dot3ExtPkgQueueSetsEntry";
-                refine mpcp-queue-index {
-                    config false;
+                leaf mpcp-queue-set-index {
+                    type uint8 {
+                        range "0 .. 7" {
+                            description 
+                             "This object can have a value between 0 and 7, limited by the value stored in 
+                              the 'mpcp-maximum-queue-count-per-report' object.";
+                            reference "See ''mpcp-maximum-queue-count-per-report' object";
+                        }
+                    }
+                    description 
+                     "This object represents the index of the Queue Set for the 'mpcp-queue-set-group'
+                      grouping. The size (occupancy) of the upstream transmission queues belonging to
+                      the given Queue Set is then reported within REPORT MPCPDU, defined in 
+                      IEEE Std 802.3, Clause 64 and Clause 77. 
+                      This object can have a value between 0 and 7, limited by the value stored in 
+                      the 'mpcp-queue-threshold-count-max' object. ";
+                    reference "IEEE Std 802.3.1, dot3QueueSetIndex";
                 }
-                refine mpcp-queue-set-index {
-                    config false;
-                }
-                refine mpcp-queue-set-threshold {
-                    config false;
+                leaf mpcp-queue-set-threshold {
+                    type uint32;
+                    units "TQ (16ns)";
+                    default 0;
+                    config true;
+                    description 
+                     "This object defines the value of a reporting threshold for each Queue Set stored
+                      in REPORT MPCPDU defined in IEEE Std 802.3, Clause 64 and Clause 77. 
+                      The number of Queue Sets for each upstream transmission queue is defined in the 
+                      'mpcp-queue-threshold-count' object. 
+                      Within REPORT MPCPDU, each Queue Set provides information on the current 
+                      upstream transmission queue occupancy for frames below the matching threshold.
+                      The value stored in this object is expressed in the units of Time quanta (TQ), 
+                      where 1 TQ = 16 ns. 
+                      A write into thsi object sets the threshold value for specific upstream 
+                      transmission queue. A change in the value of this object can lead to changes in 
+                      reporting queue occupany for the affected logical link and therefore affect the
+                      bandwidth allocation of the respective logical link. This change may lead a
+                      degradation and/or interruption of service for user(s) connected to the given
+                      logical link.
+                      This object is applicable for an OLT and an ONU. 
+                      At the OLT, it has a distinct value for each logical link, each queue, and each
+                      Queue Set.
+                      At the ONU, it has a distinct value for each queue and each Queue Set. ";
+                    reference "IEEE Std 802.3.1, dot3ExtPkgObjectReportThreshold";
                 }
             }
+        }
 
+
+  }
+
+  augment "/if:interfaces-state/if:interface/eth:ethernet" {
+    description
+      "Augments definition of Ethernet interface
+         (/if:interfaces-state/if:interface/eth:ethernet) operational state model
+         with nodes
+       specific to Ethernet MPCP";
+
+    container epon {
+            if-feature mpcp-supported;
+
+      presence
+        "Implies EPON is suported on the selected Ethernet interface";
+      description
+        "Various EPON-related operational state and counter nodes for the
+         selected Ethernet interface, including physical interfaces and logical
+         link interfaces.
+         The LLID field, as defined in IEEE Std 802.3, is a 2-byte register
+          (15-bit field and a broadcast bit) limiting the number of logical links
+          to 32768. Typically the number of expected logical links in a PON is
+          like the number of ONUs, which is 32-64, plus an additional entry for
+          broadcast LLID.
+         An ONU interface instance is created at system initialization.
+         An OLT interface instance, corresponding to the broadcast logical link,
+          is created at system initialization.
+         An OLT interface instance, corresponding to a unicast logical link, is
+          created when a logical link is established (an ONU registers) and
+          deleted when the logical link is deleted (the ONU deregisters).";
 
       container statistics-mpcp {
                 if-feature mpcp-supported;
@@ -2242,6 +1889,283 @@ module ieee-ethernet-pon {
                   defined in IEEE Std 802.3, Clause 64 and Clause 77. 
                   This object is applicable for an OLT and an ONU. 
                   At the OLT, it has a distinct value for each logical link. ";
+            }
+            list mpcp-queues {
+                key mpcp-queue-index;
+                min-elements 1;
+                description 
+                 "An instance of this object for each value of 'mpcp-queue-index' is created when 
+                  a new logical link is registered and deleted when the logical link is 
+                  deregistered.  
+                  All instances of this object in the ONU associated with the given logical link 
+                  are then mapped in to a REPORT MPCPDU, when generated. 
+                  +-----------------------------------+
+                  |          Destination Address      |
+                  +-----------------------------------+
+                  |          Source Address           |
+                  +-----------------------------------+
+                  |          Length/Type              |
+                  +-----------------------------------+
+                  |          OpCode                   |
+                  +-----------------------------------+
+                  |          TimeStamp                |
+                  +-----------------------------------+
+                  |          Number of Queue Sets     |
+                  +-----------------------------------+   /|\
+                  |          Report bitmap            |    |
+                  +-----------------------------------+    |
+                  |          Queue 0 report           |    |
+                  +-----------------------------------+    | repeated for
+                  |          Queue 1 report           |    | every
+                  +-----------------------------------+    | Queue Set
+                  |          Queue 2 report           |    |
+                  +-----------------------------------+    |
+                  |          Queue 3 report           |    |
+                  +-----------------------------------+    |
+                  |          Queue 4 report           |    |
+                  +-----------------------------------+    |
+                  |          Queue 5 report           |    |
+                  +-----------------------------------+    |
+                  |          Queue 6 report           |    |
+                  +-----------------------------------+    |
+                  |          Queue 7 report           |    |
+                  +-----------------------------------+   \|/
+                  |          Pad/reserved             |
+                  +-----------------------------------+
+                  |          FCS                      |
+                  +-----------------------------------+
+                  
+                  The 'Queue N report' field reports the current occupancy of each upstream 
+                  transmission queue associated with the given logical link. 
+                  The 'Number of Queue Sets' field defines the number of reported 'Queue N report'
+                  sets, as defined in dot3ExtPkgQueueSetsTable. 
+                  For each Queue Set, the 'Report bitmap' field defines which upstream 
+                  transmission queues are present in the REPORT MPCPDU. Although the REPORT MPCPDU
+                  can report current occupation for up to 8 upstream transmission queues in 
+                  a single REPORT MPCPDU, the actual number is flexible. The 'mpcp-queue-group' 
+                  grouping has a variable size that is limited by value of 
+                  'mpcp-maximum-queue-count-per-report' object, allowing ONUs report the occupany
+                  of fewer upstream transmission queues, as needed. 
+                  This object is applicable for an OLT and an ONU. 
+                  At the OLT, it has a distinct value for each logical link and every queue. 
+                  At the ONU, it has a distinct value for every queue.";
+                reference "IEEE Std 802.3.1, dot3ExtPkgQueueEntry";
+                leaf mpcp-queue-index {
+                    type uint8 {
+                        range "0 .. 7" {
+                            description 
+                             "This object can have a value between 0 and 7, limited by the value stored in 
+                              the 'mpcp-maximum-queue-count-per-report' object.";
+                            reference "See ''mpcp-maximum-queue-count-per-report' object";
+                        }
+                    }
+                    description 
+                     "An object represents the index of an upstream transmission queue storing 
+                      subscriber packets. The size (occupancy) of the upstream transmission queue
+                      identified by this object is then reported within REPORT MPCPDU, defined in 
+                      IEEE Std 802.3, Clause 64 and Clause 77. 
+                      This object can have a value between 0 and 7, limited by the value stored in 
+                      the 'mpcp-maximum-queue-count-per-report' object. 
+                      This object is applicable for an OLT and an ONU. 
+                      At the OLT, it has a distinct value for each logical link and each queue.
+                      At the ONU, it has a distinct value for each queue. ";
+                    reference "IEEE Std 802.3.1, dot3QueueIndex";
+                }
+                leaf mpcp-queue-threshold-count {
+                    type uint8 {
+                        range "0 .. 7" {
+                            description 
+                             "This object can have a value between 0 and 7, limited by the value stored in 
+                              the 'mpcp-queue-threshold-count-max' object.";
+                            reference "See 'mpcp-queue-threshold-count-max' object";
+                        }
+                    }
+                    config false;
+                    description 
+                     "This object reflects the number of reporting thresholds for the specific 
+                      upstream transmission queue, reflected in the REPORT MPCPDU, as defined in 
+                      IEEE Std 802.3, Clause 64 and Clause 77. 
+                      Each 'Queue set' provides information for the specific upstream transmission 
+                      queue occupancy of frames below the matching reporting threshold. 
+                      A read of this object reflects the number of reporting thresholds for the 
+                      specific upstream transmission queue.
+                      This object is applicable for an OLT and an ONU. 
+                      At the OLT, it has a distinct value for each logical link and each queue.
+                      At the ONU, it has a distinct value for each queue. ";
+                    reference "IEEE Std 802.3.1, dot3ExtPkgObjectReportNumThreshold";
+                }
+                leaf mpcp-queue-threshold-count-max {
+                    type uint8 {
+                        range "0 .. 7" {
+                            description "This object can have a value between 0 and 7.";
+                        }
+                    }
+                    config false;
+                    description 
+                     "This object reflects the maximum number of reporting thresholds for the 
+                      specific upstream transmission queue, reflected in the REPORT MPCPDU, 
+                      as defined in IEEE Std 802.3, Clause 64 and Clause 77. 
+                      A read of this object reflects the maximum number of reporting thresholds 
+                      for the specific upstream transmission queue.
+                      This object is applicable for an OLT and an ONU. 
+                      At the OLT, it has a distinct value for each logical link and each queue.
+                      At the ONU, it has a distinct value for each queue. ";
+                    reference "IEEE Std 802.3.1, dot3ExtPkgObjectReportMaximumNumThreshold";
+                }
+                list mpcp-queue-thresholds {
+                    when "../mpcp-queue-threshold-count > 0";
+                    key mpcp-queue-set-index;
+                    min-elements 0;
+                    max-elements 7;
+                    description 
+                     "An instance of this object for each value of 'mpcp-queue-index' is created when 
+                      a new logical link is registered and deleted when the logical link is 
+                      deregistered.  
+                      All instances of this object in the ONU associated with the given logical link 
+                      are then mapped in to a REPORT MPCPDU, when generated. 
+                      +-----------------------------------+
+                      |          Destination Address      |
+                      +-----------------------------------+
+                      |          Source Address           |
+                      +-----------------------------------+
+                      |          Length/Type              |
+                      +-----------------------------------+
+                      |          OpCode                   |
+                      +-----------------------------------+
+                      |          TimeStamp                |
+                      +-----------------------------------+
+                      |          Number of Queue Sets     |
+                      +-----------------------------------+   /|\
+                      |          Report bitmap            |    |
+                      +-----------------------------------+    |
+                      |          Queue 0 report           |    |
+                      +-----------------------------------+    | repeated for
+                      |          Queue 1 report           |    | every
+                      +-----------------------------------+    | Queue Set
+                      |          Queue 2 report           |    |
+                      +-----------------------------------+    |
+                      |          Queue 3 report           |    |
+                      +-----------------------------------+    |
+                      |          Queue 4 report           |    |
+                      +-----------------------------------+    |
+                      |          Queue 5 report           |    |
+                      +-----------------------------------+    |
+                      |          Queue 6 report           |    |
+                      +-----------------------------------+    |
+                      |          Queue 7 report           |    |
+                      +-----------------------------------+   \|/
+                      |          Pad/reserved             |
+                      +-----------------------------------+
+                      |          FCS                      |
+                      +-----------------------------------+
+                      
+                      The 'Queue N report' field reports the current occupancy of each upstream 
+                      transmission queue associated with the given logical link. 
+                      The 'Number of Queue Sets' field defines the number of reported 'Queue N report'
+                      sets, as defined in dot3ExtPkgQueueSetsTable. 
+                      For each Queue Set, the 'Report bitmap' field defines which upstream 
+                      transmission queues are present in the REPORT MPCPDU. Although the REPORT MPCPDU
+                      can report current occupation for up to 8 upstream transmission queues in 
+                      a single REPORT MPCPDU, the actual number is flexible. The 'mpcp-queue-group' 
+                      grouping has a variable size that is limited by value of 
+                      'mpcp-maximum-queue-count-per-report' object, allowing ONUs report the occupany
+                      of fewer upstream transmission queues, as needed. 
+                      This object is applicable for an OLT and an ONU. 
+                      At the OLT, it has a distinct value for each logical link and every queue. 
+                      At the ONU, it has a distinct value for every queue.";
+                    reference "IEEE Std 802.3.1, Dot3ExtPkgQueueSetsEntry";
+                    leaf mpcp-queue-set-index {
+                        type uint8 {
+                            range "0 .. 7" {
+                                description 
+                                 "This object can have a value between 0 and 7, limited by the value stored in 
+                                  the 'mpcp-maximum-queue-count-per-report' object.";
+                                reference "See ''mpcp-maximum-queue-count-per-report' object";
+                            }
+                        }
+                        description 
+                         "This object represents the index of the Queue Set for the 'mpcp-queue-set-group'
+                          grouping. The size (occupancy) of the upstream transmission queues belonging to
+                          the given Queue Set is then reported within REPORT MPCPDU, defined in 
+                          IEEE Std 802.3, Clause 64 and Clause 77. 
+                          This object can have a value between 0 and 7, limited by the value stored in 
+                          the 'mpcp-queue-threshold-count-max' object. ";
+                        reference "IEEE Std 802.3.1, dot3QueueSetIndex";
+                    }
+                    leaf mpcp-queue-set-threshold {
+                        type uint32;
+                        units "TQ (16ns)";
+                        default 0;
+                        config false;
+                        description 
+                         "This object defines the value of a reporting threshold for each Queue Set stored
+                          in REPORT MPCPDU defined in IEEE Std 802.3, Clause 64 and Clause 77. 
+                          The number of Queue Sets for each upstream transmission queue is defined in the 
+                          'mpcp-queue-threshold-count' object. 
+                          Within REPORT MPCPDU, each Queue Set provides information on the current 
+                          upstream transmission queue occupancy for frames below the matching threshold.
+                          The value stored in this object is expressed in the units of Time quanta (TQ), 
+                          where 1 TQ = 16 ns. 
+                          A read of this object provides the current threshold value for the specific
+                          upstream transmission queue. 
+                          This object is applicable for an OLT and an ONU. 
+                          At the OLT, it has a distinct value for each logical link, each queue, and each
+                          Queue Set.
+                          At the ONU, it has a distinct value for each queue and each Queue Set. ";
+                        reference "IEEE Std 802.3.1, dot3ExtPkgObjectReportThreshold";
+                    }
+                }
+                leaf mpcp-queue-pkts-in {
+                    type yang:counter64;
+                    config false;
+                    description 
+                     "This object reflects the number of frame reception events into the 
+                      corresponding upstream transmission queue. This object is incremented by one 
+                      for each frame received, when it is input into the associated queue. 
+                      The queue index matches the queue number in REPORT MPCPDU, as defined in 
+                      IEEE Std 802.3, Clause 64 and Clause 77. 
+                      This object is applicable for an OLT and an ONU. 
+                      At the OLT, it has a distinct value for each logical link and each queue.
+                      At the ONU, it has a distinct value for each queue. 
+                      Discontinuities of this counter can occur at re-initialization of the management
+                      system and at other times, as indicated by the value of the 
+                      ifCounterDiscontinuityTime object.";
+                    reference "IEEE Std 802.3.1, dot3ExtPkgStatRxFramesQueue";
+                }
+                leaf mpcp-queue-pkts-out {
+                    when "if:interfaces-state/if:interface/eth:ethernet/epon:epon/mpcp-mode = 'onu'";
+                    type yang:counter64;
+                    config false;
+                    description 
+                     "This object reflects the number of frame transmission events from the 
+                      corresponding upstream transmission queue. This object is incremented by one 
+                      for each frame transmitted, when it is output from the associated queue. 
+                      The queue index matches the queue number in REPORT MPCPDU, as defined in 
+                      IEEE Std 802.3, Clause 64 and Clause 77. 
+                      This object is applicable for an ONU only. 
+                      At the ONU, it has a distinct value for each queue. 
+                      Discontinuities of this counter can occur at re-initialization of the management
+                      system and at other times, as indicated by the value of the 
+                      ifCounterDiscontinuityTime object.";
+                    reference "IEEE Std 802.3.1, dot3ExtPkgStatTxFramesQueue";
+                }
+                leaf mpcp-queue-pkts-drop {
+                    when "if:interfaces-state/if:interface/eth:ethernet/epon:epon/mpcp-mode = 'onu'";
+                    type yang:counter64;
+                    config false;
+                    description 
+                     "This object reflects the number of frame drop events from the 
+                      corresponding upstream transmission queue. This object is incremented by one 
+                      for each frame is dropped in the associated queue. 
+                      The queue index matches the queue number in REPORT MPCPDU, as defined in 
+                      IEEE Std 802.3, Clause 64 and Clause 77. 
+                      This object is applicable for an ONU only. 
+                      At the ONU, it has a distinct value for each queue. 
+                      Discontinuities of this counter can occur at re-initialization of the management
+                      system and at other times, as indicated by the value of the 
+                      ifCounterDiscontinuityTime object.";
+                    reference "IEEE Std 802.3.1, dot3ExtPkgStatDroppedFramesQueue";
+                }
             }
 
             leaf ompe-mode {
