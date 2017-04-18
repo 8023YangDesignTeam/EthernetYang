@@ -153,7 +153,7 @@ module ieee802-ethernet-interface-legacy {
   }
 
 /*
-  * Not currently required, but kept in for the moment, in case it is 
+  * Not currently required, but kept in for the moment, in case it is
   * needed.  If nothing is here at publication time this this
   * augmentation can be deleted.
 
@@ -168,7 +168,7 @@ module ieee802-ethernet-interface-legacy {
 */
 
   augment "/if:interfaces-state/if:interface/eth-if:ethernet/" + 
-          "eth-if:frame-statistics" {
+          "eth-if:statistics/eth-if:frame" {
     when "../../if:type = 'ianaift:ethernetCsmacd'" {
       description "Applies to all Ethernet interfaces";
     }
