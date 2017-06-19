@@ -17,18 +17,25 @@ module ieee802-ethernet-link-oam {
   /*** META INFORMATION ***/
 
   organization
-    "Cisco Systems, Inc.
-     Customer Service
+    "Web URL: http://www.ieee802.org/3/
 
-     Postal: 170 W Tasman Drive
-     San Jose, CA 95134
+     Working Group Chair:
+       David Law
+       dlaw@hpe.com
 
-     Tel: +1 1800 553-NETS
-     
-     E-mail: cs-yang@cisco.com";
+     Working Group Vice-chair:
+       Adam Healey
+       adam.healey@broadcom.com
+
+     Acting YANG Data Model Definitions Task Force Chair:
+       Yan Zhuang
+       zhuangyan.zhuang@huawei.com
+
+     Editor:
+       TBD";
 
   contact
-    "Richard Furness - rfurness@cisco.com";
+    "TBD";
 
   description 
     "This module contains a collection of YANG definitions
