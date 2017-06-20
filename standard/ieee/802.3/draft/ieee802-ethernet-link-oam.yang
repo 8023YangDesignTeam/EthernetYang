@@ -66,7 +66,7 @@ module ieee802-ethernet-link-oam {
     description
       "This feature means the device supports remote loopback";
     reference	
-      "[802.3] 57.1.2:b";
+      "[802.3] 57.2.11";
   }
   feature link-monitoring {
     description
@@ -910,7 +910,7 @@ module ieee802-ethernet-link-oam {
     description
       "Start/stop remote loopback on the specified interface.";
     reference
-      "[802.3] 57.1.2:b";
+      "[802.3] 57.2.11";
     input {
       leaf interface {
         type if:interface-ref;
