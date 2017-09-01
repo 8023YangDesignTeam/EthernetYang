@@ -49,6 +49,15 @@ module ieee802-ethernet-interface {
      interfaces'";
   reference "IEEE 802.3-2015, unless dated explicitly";
   
+  revision 2017-09-01 {
+    description
+      "Restructed to be NMDA compliant.";
+
+    reference 
+      "IEEE P802.3.2 (IEEE 802.3cf) YANG Data Model Definitions Task
+       Force";
+  }
+
   revision 2017-02-23 {
     description
       "Initial revision of YANG model for IEEE 802.3 Ethernet
@@ -192,12 +201,42 @@ module ieee802-ethernet-interface {
           type boolean;
           
           description
-            "Controls whether auto-negotiation is enabled or
+            "Represents whether auto-negotiation is enabled or
              disabled.
              
              For interface types that support auto-negotiation then
              it defaults to being enabled.  TODO - Or should the
              default just be left to vendor discretion?";
+        }
+
+        leaf negotiation-status {
+          when "../enable = 'true'";
+          type enumeration {
+            enum in-progress {
+              description
+                "The auto-negotiation protocol is running and
+                 negotiation is currently in-progress";
+            }
+            enum complete {
+              description
+                "The auto-negotation protocol has completed
+                 successfully";
+            }
+            enum failed {
+              description
+                "The auto-negotation protocol has failed.";
+            }
+            enum unknown {
+              description
+                "The auto-negotiation status is not currently known,
+                 this could be because it is still negotiating or the
+                 protocol cannot run (e.g. if no medium is present)";
+            }
+          }
+          config false;
+          description
+            "The status of the auto-negotiation protocol";
+          reference "IEEE 802.3, 30.6.1.1.4, aAutoNegAutoConfig";
         }
       }
     
@@ -205,8 +244,10 @@ module ieee802-ethernet-interface {
         type duplex-type;
         default full;
         description 
-          "Force the Ethernet interface to run in full or half duplex
-           mode (if supported).
+          "Controls/indicates the duplex mode of the interface.
+
+           If configured, force the Ethernet interface to run in full
+           or half duplex mode (if supported).
 
            If auto-negotiation is enabled then explicitly configuring
            duplex restricts the duplex value that may be negotiated.
@@ -254,147 +295,9 @@ module ieee802-ethernet-interface {
                If auto-negotiation is enabled, then PAUSE based
                flow-control is negoiated by default.";
           }
-        }
-
-        container pfc {
-          if-feature "ethernet-pfc";
-          description "802.3 Priority-based flow control";
-          reference "IEEE 802.3, Annex 31 D";
-
-          leaf enable {
-            type boolean;
-              // TODO - Add must statement to enforce pfc xor pause,
-              // must "";
-
-            description
-              "True indicates that 802.3 priority-based flow control
-               is enabled, false indicates that 802.3 priority-based
-               flow control is disabled.
-
-               For interfaces that have auto-negotiation, then
-               priority-based flow control is negotiated by default.
-
-               If explicitly configured, when auto-negotiated is
-               enabled, then the configuration will restrict the
-               priority flow control settings that can be negotiated.
-               ";
-          }
-        }
-        
-        leaf force-flow-control {
-          type boolean;
-          default false;
-          description
-            "Explicitly force the local flow control settings
-             regardless of what has been negotiated.
-
-             Since the auto-negotiation of flow-control settings
-             doesn't allow all sane combinations to be negotiated
-             (e.g.  consider a device that is only capable of sending
-             PAUSE frames connected to a peer device that is only
-             capable of receiving and acting on PAUSE frames) and
-             failing to agree on the flow-control settings doesn't
-             cause the auto-negotation to fail completely, then it is
-             sometimes useful to be able to explicitly enable
-             particular flow control settings on the local device
-             regardless of what is being advertised or negotiated";
-          reference
-            "IEEE 802.3 Table 28B-3-Pause resolution";
-        }
-      }
-    }
-  }  
-
-  /*
-   * Operational State.
-   */
-  augment "/if:interfaces-state/if:interface" {
-    when "if:type = 'ianaift:ethernetCsmacd'" {
-      description "Applies to all Ethernet interfaces";
-    }
-    description 
-      "Augments interfaces-state model with 802.3 Ethernet
-       specific operational state nodes";
-
-    container ethernet {
-      description
-        "Contains operational state for Ethernet interfaces";
-      
-      container auto-negotiation {
-        description
-          "Holds all operational state related to auto-negotiation.";
-
-        leaf enable {
-          type boolean;
-          
-          description
-            "Indicates whether auto-negotiation is enabled or
-             disabled.  If the interface is not capable of supporting
-             auto-negotiation then this must be reported as false";
-        }
-        
-        leaf negotiation-status {
-          when "../enable = 'true'";
-          type enumeration {
-            enum in-progress {
-              description
-                "The auto-negotiation protocol is running and
-                 negotiation is currently in-progress";
-            }
-            enum complete {
-              description
-                "The auto-negotation protocol has completed
-                 successfully";
-            }
-            enum failed {
-              description
-                "The auto-negotation protocol has failed.";
-            }
-            enum unknown {
-              description
-                "The auto-negotiation status is not currently known,
-                 this could be because it is still negotiating or the
-                 protocol cannot run (e.g. if no medium is present)";
-            }
-          }
-          description
-            "The status of the auto-negotiation protocol";
-          reference "IEEE 802.3, 30.6.1.1.4, aAutoNegAutoConfig";
-        }
-      }
-
-      leaf duplex {
-        type duplex-type;
-        description 
-          "Operational duplex mode of the Ethernet interface.";
-        reference "IEEE Std 802.3, 30.3.1.1.32, aDuplexStatus";
-      }
-      
-      leaf speed {
-        type eth-if-speed-type;
-        units "Gb/s";
-        description "Operational speed of the Ethernet interface";
-      }
-
-      container flow-control {
-        description
-          "Holds the different types of Ethernet flow control that
-           can be enabled";
-        container pause {
-          description "802.3 PAUSE frame based flow control";
-          reference "IEEE 802.3, xxx";
-          leaf direction {
-            type pause-fc-direction-type;
-            description
-              "Indicates which direction flow control is enabled in,
-               or whether it is disabled.  The default flow-control
-               settings are vendor specific.
-
-               If auto-negotiation is enabled, then PAUSE based
-               flow-control is negoiated by default.";
-          }
 
           container statistics {
+            config false;
             description
               "Contains the number of PAUSE frames received or
                transmitted";
@@ -441,8 +344,7 @@ module ieee802-ethernet-interface {
 
           leaf enable {
             type boolean;
-              // TODO - Add must statement to enforce pfc or pause,
-              // not both.
+              // TODO - Add must statement to enforce pfc xor pause,
               // must "";
 
             description
@@ -455,11 +357,12 @@ module ieee802-ethernet-interface {
 
                If explicitly configured, when auto-negotiated is
                enabled, then the configuration will restrict the
-               priority flow control settings that can be
-               negotiated.";
+               priority flow control settings that can be negotiated.
+               ";
           }
 
           container statistics {
+            config false;
             description "TODO";
 
             leaf in-pkts-pfc {
@@ -498,6 +401,7 @@ module ieee802-ethernet-interface {
         
         leaf force-flow-control {
           type boolean;
+          default false;
           description
             "Explicitly force the local flow control settings
              regardless of what has been negotiated.
@@ -520,15 +424,17 @@ module ieee802-ethernet-interface {
       leaf max-frame-length {
         type uint16;
         units octets;
+        config false;
         description
           "This indicates the MAC frame length (including FCS bytes)
            at which frames are dropped for being too long.";
         reference "IEEE 802.3, 30.3.1.1.25, aMaxFrameLength";
       }
-      
+
       // TODO - Do we need this?  Can it be express in a better way?
       leaf macc-extension-control {
         type boolean;
+        config false;
         description
           "A value that identifies the current EXTENSION MAC Control
            function, as specified in IEEE Std 802.3, Annex 31C.";
@@ -545,6 +451,7 @@ module ieee802-ethernet-interface {
         type uint32;
         units fps;
         default 10;
+        config false;
         description
           "The maximum number of Slow Protocol frames of a given
            subtype that can be transmitted in a one second interval.
@@ -560,6 +467,7 @@ module ieee802-ethernet-interface {
        *        via an RPC.
        */
       container capabilities {
+        config false;
         description
           "Container all Ethernet interface specific capabilties.";
 
@@ -581,6 +489,7 @@ module ieee802-ethernet-interface {
        * Ethernet statistics.
        */
       container statistics {
+        config false;
         description
           "Contains statistics specific to Ethernet interfaces
  

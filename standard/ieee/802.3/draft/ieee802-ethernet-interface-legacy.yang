@@ -51,6 +51,15 @@ module ieee802-ethernet-interface-legacy {
      backwards compatibility purposes, but the general expectation is
      that this module is not anticipated to be widely implemented.";
   reference "IEEE 802.3-2015, unless dated explicitly";
+
+  revision 2017-09-01 {
+    description
+      "Restructed to be NMDA compliant.";
+
+    reference 
+      "IEEE P802.3.2 (IEEE 802.3cf) YANG Data Model Definitions Task
+       Force";
+  }
   
   revision 2017-01-20 {
     description
@@ -127,7 +136,7 @@ module ieee802-ethernet-interface-legacy {
     }
   }
 
-  augment "/if:interfaces-state/if:interface/eth-if:ethernet/" + 
+  augment "/if:interfaces/if:interface/eth-if:ethernet/" + 
           "eth-if:capabilities" {
     when "../../if:type = 'ianaift:ethernetCsmacd'" {
       description "Applies to all Ethernet interfaces";
@@ -138,14 +147,10 @@ module ieee802-ethernet-interface-legacy {
 
     leaf dynamic-rate-control-supported {
       if-feature "dynamic-rate-control";
-<<<<<<< HEAD
       type boolean;
       default false;
-=======
-	  type boolean;
-      default false;
-	  status deprecated; // TODO - Do we need to mark leaves as well?
->>>>>>> upstream/master
+      status deprecated; // TODO - Do we need to mark leaves as well?
+
       description 
         "Indicates whether the Ethernet interface supports lowering
          the average data rate of the MAC sublayer, with frame
@@ -163,7 +168,7 @@ module ieee802-ethernet-interface-legacy {
   * needed.  If nothing is here at publication time this this
   * augmentation can be deleted.
 
-  augment "/if:interfaces-state/if:interface/eth-if:ethernet" {
+  augment "/if:interfaces/if:interface/eth-if:ethernet" {
     when "if:type = 'ianaift:ethernetCsmacd'" {
       description "Applies to all Ethernet interfaces";
     }
@@ -173,7 +178,7 @@ module ieee802-ethernet-interface-legacy {
   }
 */
 
-  augment "/if:interfaces-state/if:interface/eth-if:ethernet/" + 
+  augment "/if:interfaces/if:interface/eth-if:ethernet/" + 
           "eth-if:statistics/eth-if:frame" {
     when "../../../if:type = 'ianaift:ethernetCsmacd'" {
       description "Applies to all Ethernet interfaces";
