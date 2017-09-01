@@ -1,4 +1,4 @@
-module ieee-dot3-poe{
+module ieee802-dot3-poe {
   namespace "urn:ieee:params:xml:ns:yang:ieee-dot3-poe";
   prefix poe;
   
@@ -7,7 +7,7 @@ module ieee-dot3-poe{
     prefix if;
   }
   
-  import ethernet { 
+  import ieee802-ethernet-interface { 
     prefix eth;
   }
   
@@ -262,7 +262,7 @@ module ieee-dot3-poe{
   * Operational
   */
   /*poe port*/
-  augment "/if:interfaces-state/if:interface/eth:Ethernet" {
+  augment "/if:interfaces-state/if:interface/eth:ethernet" {
     description
       "Augments ethernet interface operational state model with nodes
        specific to DTE Power via MDI devices and ports";

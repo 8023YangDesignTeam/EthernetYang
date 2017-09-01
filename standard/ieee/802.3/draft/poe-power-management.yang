@@ -1,0 +1,253 @@
+module poe-power-management{
+	namespace "urn:ietf:params:xml:ns:yang:poe-power-management";
+    prefix poe-power;
+
+	import ietf-interfaces { 
+		prefix if;
+	}
+	import ieee802-pse {
+		prefix pse;
+	}
+  
+	/**Meta information**/
+  organization
+  "
+		Huawei Technologies
+		Fei Li 
+        lifei@huawei.com"; 
+ 
+ 
+    contact 
+     "Fei Li - lifei@huawei.com"; 
+
+  
+  description
+  "This module contains YANG defintions for confirguring and 
+  managing power system for Power Over Ethernet feature defined by
+  IEEE 802.3. It provdes funcitonality roughly equivalent to
+  that of the POWER-ETHERNET-MIB defined in RFC3621.";
+  
+  revision 2017-01-25{
+	description
+	"Initial version of power management for IEEE 802.3 PSE.";
+  }
+  
+  /*Identities&typedef*/
+  typedef percentage {
+    description "Percentage value in integer format.";
+    type uint8 {
+      range "0..100";
+    }
+  }
+  
+  identity poe-power-module-event {
+	description "Poe power module event notification base type.";
+  }
+  
+  
+  identity power-usage-alarm {
+	base poe-power-module-event ;
+	description
+	"Base identity for power usage event";
+  }
+  
+  container poe-ports-state {
+    description "Query for all poe ports and power wire pair type.";
+    
+    config false;
+    
+    list poe-interfaces {
+      key if-name ;
+      
+      leaf if-name {
+        type if:interface-state-ref ;
+      }
+      
+      leaf wire-pair-type {
+        type identityref {
+          base pse:pse-pair-mode ;
+        }
+      }
+	  leaf power-priority {
+          type uint32;
+          description
+             "This object controls the priority of the port from the point
+            of view of a power management algorithm.";
+        }
+	  leaf connected-pd-type {
+          type string;
+          description
+            "A manager will set the value of this variable to indicate
+            the type of powered device that is connected to the port.
+            The default value supplied by the agent if no value has
+            ever been set should be a zero-length octet string";
+        }
+    }
+  }
+  container poe-system-config {
+    description "Configurations of the poe system.";
+    
+    /* Poe power module usage alarm configuration */
+    container main-power-usage-threshold {
+      description "Poe power module per slot usage alarm threshold setting.";
+      
+      list threhold {
+        key "slot-id";
+        
+        leaf slot-id {
+          description "Poe module installed slot.";
+          type uint32;
+        }
+        
+        leaf usage-threshold {
+          description
+          "The usage threshold expressed in percents for 
+           comparing the measured power and initiating an alarm 
+           if the threshold is exceeded.";
+          
+          type percentage ;
+        }
+      }
+    }
+  }
+  
+  /*main source operational state*/
+  container main-power-sources-state {
+    config false;
+       
+    description
+      "operational state for main power source";
+       
+    list main-power-source-entry {
+      key "slot-id";
+      description "main power source entry";
+          
+      leaf slot-id {
+        description "Poe power module installed slot.";
+        type uint32;
+      }
+          
+      container power-info {
+        description 
+          "power information of the main power source";
+        
+        leaf total-power {
+          type decimal64 {
+            fraction-digits 4;
+          }
+          units 'watt';
+          description
+            "The nominal power of the PSE expressed in Watts";
+        }
+        
+        leaf reserved-power {
+          type percentage ;
+          description
+            "The percent of power that the system reserved.";
+        }
+        
+        leaf consuming-power {
+          type decimal64 {
+            fraction-digits 4;
+          }
+          units 'watt';
+          description
+            "Measured usage power";
+        }
+        
+        leaf remained-power {
+          type decimal64 {
+            fraction-digits 4 ;
+          }
+          units 'watt';
+          description
+            "total power * (1-reserved power)-consuming Power";
+        }
+        
+        leaf peak-power {
+          type decimal64 {
+            fraction-digits 4;
+          }
+          units 'watt';
+          description
+            "the peak power";
+        }
+        
+        leaf usage-threshold {
+          type percentage ;
+          
+          description
+            "The usage threshold expressed in percents for
+             comparing the measured power and initiating
+             an alarm if the threshold is exceeded.";
+        }
+        
+      }
+
+          
+      leaf operStatus {
+        type enumeration {
+          enum on {
+            value 1;
+            description "the main pse is on";
+          }
+          enum off {
+            value 2;
+            description "the main pse is off";
+          }
+          enum faulty {
+            value 3;
+            description "the main pse is faulty";
+          }
+        }
+      
+        default on;
+        description
+          "The operational status of the main PSE";
+      }
+    }
+  }
+  
+
+   /*
+   * Notifications
+   */
+  notification poe-power-notification {
+    description "power event notification when the notification switch is on.";
+    
+      list event {
+      key "slot-id event-type";
+      
+      leaf slot-id {
+        description "Slot id of the power source";
+        type uint8 ;
+      }
+      
+      leaf event-type {
+        description "event type for main power source.";
+        type identityref {
+          base poe-power-module-event ;
+        }
+      }
+      
+      container event-content {
+        description "Event notification content.";
+        
+        container power-usage {
+          when " ../../event-type = 'poe-power:power-usage-alarm' " ;
+          
+          leaf consuming-power {
+            mandatory true;
+            type uint32;
+            description "consuming power";
+          }
+          
+          leaf usage-threshold {
+            type uint32;
+            description "usage threshold";
+          } 
+        }
+      }
+    }
+  }
+}

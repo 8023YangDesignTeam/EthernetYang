@@ -1,4 +1,4 @@
-module ethernet-link-oam {
+module ieee802-ethernet-link-oam {
 
   /*** NAMESPACE / PREFIX DEFINITION ***/
 
@@ -12,23 +12,30 @@ module ethernet-link-oam {
   
   import ietf-interfaces { prefix "if"; }
 
-  import ethernet { prefix "eth"; }
+  import ieee802-ethernet-interface { prefix "eth"; }
 
   /*** META INFORMATION ***/
 
   organization
-    "Cisco Systems, Inc.
-     Customer Service
+    "Web URL: http://www.ieee802.org/3/
 
-     Postal: 170 W Tasman Drive
-     San Jose, CA 95134
+     Working Group Chair:
+       David Law
+       dlaw@hpe.com
 
-     Tel: +1 1800 553-NETS
-     
-     E-mail: cs-yang@cisco.com";
+     Working Group Vice-chair:
+       Adam Healey
+       adam.healey@broadcom.com
+
+     Acting YANG Data Model Definitions Task Force Chair:
+       Yan Zhuang
+       zhuangyan.zhuang@huawei.com
+
+     Editor:
+       TBD";
 
   contact
-    "Richard Furness - rfurness@cisco.com";
+    "TBD";
 
   description 
     "This module contains a collection of YANG definitions
@@ -59,7 +66,7 @@ module ethernet-link-oam {
     description
       "This feature means the device supports remote loopback";
     reference	
-      "[802.3] 57.1.2:b";
+      "[802.3] 57.2.11";
   }
   feature link-monitoring {
     description
@@ -903,7 +910,7 @@ module ethernet-link-oam {
     description
       "Start/stop remote loopback on the specified interface.";
     reference
-      "[802.3] 57.1.2:b";
+      "[802.3] 57.2.11";
     input {
       leaf interface {
         type if:interface-ref;
