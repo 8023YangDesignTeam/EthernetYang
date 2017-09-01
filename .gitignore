@@ -1,5 +1,14 @@
 .DS_Store
 *~
 *.pyc
+*.idea
+*log*.txt
+/api/
+tools/**/*.json
+tools/**/*.html
+!tools/statistics/template/stats.html
+tools/**/*capabili*.xml.txt
+tools/**/cache
 v/
-
+yang.egg-info
+/**/yang.log
